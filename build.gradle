@@ -1,0 +1,97 @@
+plugins {
+    id 'java'
+    id "org.springframework.boot" version "2.7.12" apply false
+    id "io.spring.dependency-management" version "1.1.0" apply false
+    id "com.gorylenko.gradle-git-properties" version "2.4.1" apply false
+    id "io.franzbecker.gradle-lombok" version "5.0.0" apply false
+    id "org.sonarqube" version "4.2.0.3129" apply false
+}
+
+subprojects {
+    apply plugin: 'java-library'
+    apply plugin: 'groovy'
+    apply plugin: 'idea'
+    apply plugin: 'jacoco'
+    apply plugin: "org.sonarqube"
+    apply plugin: "org.springframework.boot"
+    apply plugin: "io.franzbecker.gradle-lombok"
+    apply plugin: "io.spring.dependency-management"
+    apply plugin: "com.gorylenko.gradle-git-properties"
+
+    group = 'com.memolink'
+    version = '0.0.1'
+    sourceCompatibility = '11'
+
+    configurations {
+        compileOnly {
+            extendsFrom annotationProcessor
+        }
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        implementation 'org.slf4j:jul-to-slf4j'
+        implementation 'org.slf4j:slf4j-api'
+        implementation 'org.slf4j:slf4j-ext'
+
+        implementation 'ch.qos.logback:logback-core'
+        implementation 'ch.qos.logback:logback-access'
+        testImplementation 'ch.qos.logback:logback-classic'
+
+        implementation 'org.springframework.boot:spring-boot-starter-web'
+        implementation 'org.springframework.boot:spring-boot-starter-actuator'
+        implementation 'org.springframework.boot:spring-boot-starter-validation'
+        implementation 'org.springframework.boot:spring-boot-configuration-processor'
+        implementation('org.springframework.cloud:spring-cloud-starter-openfeign:3.1.7') {
+            exclude group: "commons-fileupload", module: "commons-fileupload"
+        }
+        implementation 'commons-fileupload:commons-fileupload:1.5'
+        implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j:2.1.7'
+        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+        implementation 'org.springframework.boot:spring-boot-devtools'
+
+        implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
+        implementation 'com.google.guava:guava:32.0.0-jre'
+
+        implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8'
+        implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+        implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
+        implementation 'com.fasterxml.jackson.module:jackson-module-parameter-names'
+
+        compileOnly 'org.projectlombok:lombok'
+        annotationProcessor 'org.projectlombok:lombok'
+
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    }
+
+    tasks.named('test') {
+        useJUnitPlatform()
+    }
+
+    lombok {
+        version = property('lombok.version')
+        sha256 = ''
+    }
+
+    sonarqube {
+        properties {
+            property 'sonar.projectKey', project.group + ':' + project.name
+        }
+    }
+
+
+    test.onlyIf {
+        project.hasProperty('testOn')
+    }
+
+    bootRun {
+        bootRun.systemProperty "spring.profiles.active", "${springProfile}"
+    }
+
+
+}
+

@@ -1,0 +1,4 @@
+rootProject.name = 'memo-link'
+include 'memo-link-api'
+include 'memo-link-domain'
+

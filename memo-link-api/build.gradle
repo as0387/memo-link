@@ -1,0 +1,16 @@
+bootJar {
+    archiveVersion.set('')
+}
+
+dependencies {
+    implementation "org.mapstruct:mapstruct:${mapStructVersion}"
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapStructVersion}"
+    testAnnotationProcessor "org.mapstruct:mapstruct-processor:${mapStructVersion}"
+    implementation project(':memo-link-domain')
+}
+
+distsDirName = '.'
+
+task zip(type: Zip, dependsOn: bootJar) {
+    from bootJar.outputs.files
+}
